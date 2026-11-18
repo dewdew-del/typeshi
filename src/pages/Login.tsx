@@ -71,7 +71,7 @@ export function Login() {
       <div className="flex w-full max-w-[420px] flex-col gap-[18px] rounded-[20px] border border-border bg-surface p-8 shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
         {!supabase && (
           <p role="alert" className="rounded-xl bg-accent-soft p-3 text-sm">
-            Accounts are not set up on this copy of TypeRight. Everything else works as a guest.
+            Accounts are not set up on this copy of Typeshi. Everything else works as a guest.
           </p>
         )}
         <div>

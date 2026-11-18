@@ -1,9 +1,9 @@
-# TypeRight
+# Typeshi
 
 A free typing trainer that teaches correct finger placement, then lets you race friends.
 Learn on a 200-lesson Journey, practice casually in English or Filipino, and compete on server-checked leaderboards.
 
-**Live site:** https://typeright.vercel.app (free, no account needed)
+**Live site:** https://typeshi.vercel.app (free, no account needed)
 
 ![Landing page](docs/screenshots/landing.png)
 
@@ -55,7 +55,7 @@ The browser never reports its own speed. It sends the raw key log, and the serve
 
 ## Problem I solved
 
-An online leaderboard is only fun if the numbers are real. If the browser just sent "I typed 200 WPM", anyone could edit that request. So TypeRight:
+An online leaderboard is only fun if the numbers are real. If the browser just sent "I typed 200 WPM", anyone could edit that request. So Typeshi:
 
 - picks the text on the server and hands out a one-use token,
 - takes only the key log from the browser and replays it on the server,
@@ -70,8 +70,8 @@ Honest limit: a script that copies a real person's typing rhythm closely can sti
 You need Node.js 20.19 or newer (or 22.12+) and a free [Supabase](https://supabase.com) project.
 
 ```bash
-git clone https://github.com/dewdew-del/typeright.git
-cd typeright
+git clone https://github.com/dewdew-del/typeshi.git
+cd typeshi
 npm install
 ```
 

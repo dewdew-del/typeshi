@@ -14,7 +14,7 @@ export function PrivacyDialog() {
         <p className="text-sm text-muted">Last updated {UPDATED}</p>
 
         <p>
-          TypeRight is a free typing trainer made as a personal portfolio project. This page explains what it stores
+          Typeshi is a free typing trainer made as a personal portfolio project. This page explains what it stores
           about you and why. It does not sell your data, show ads or use tracking cookies.
         </p>
 
@@ -27,7 +27,7 @@ export function PrivacyDialog() {
         <Section title="What we store when you log in">
           <ul className="ml-5 list-disc space-y-1">
             <li>Your email address, to log you in.</li>
-            <li>If you use Google: your name and email address from Google. TypeRight does not get access to anything else in your Google account.</li>
+            <li>If you use Google: your name and email address from Google. Typeshi does not get access to anything else in your Google account.</li>
             <li>Your username, country and profile photo, if you set them. These are shown on the leaderboards, in races and on your public profile. The leaderboards also show your speed and accuracy, and the time of Endless runs.</li>
             <li>Your lesson progress, typing results (speed, accuracy and how long the run lasted) and which keys you miss most.</li>
             <li>Which casual typing stories you have finished, so you get new ones until you have read them all.</li>
@@ -44,7 +44,7 @@ export function PrivacyDialog() {
         </Section>
 
         <Section title="People online">
-          The home page shows how many people have TypeRight open right now. This is a live counter only: each open tab
+          The home page shows how many people have Typeshi open right now. This is a live counter only: each open tab
           uses a random, temporary id that is forgotten when the tab closes. No names, accounts or locations are used.
         </Section>
 
@@ -60,12 +60,12 @@ export function PrivacyDialog() {
 
         <Section title="Your choices">
           You can change your username, country and photo at any time in your profile. To delete your account and all
-          its data, contact the developer using the support email shown on TypeRight's Google sign-in screen, and it
+          its data, contact the developer using the support email shown on Typeshi's Google sign-in screen, and it
           will be removed.
         </Section>
 
         <Section title="Children">
-          TypeRight is suitable for learners of all ages but does not knowingly collect more than an email address
+          Typeshi is suitable for learners of all ages but does not knowingly collect more than an email address
           from anyone. Younger children can use it without an account.
         </Section>
 

@@ -25,10 +25,13 @@ export function Logo({ to, variant = 'surface', size = 'md' }: Props) {
           sky ? 'bg-cta text-cta-fg' : 'bg-accent text-accent-contrast',
         ].join(' ')}
       >
-        T
+        <svg viewBox="0 0 32 32" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 8.5h22M9 8.5v14.2" />
+          <path d="M16.6 15.8c-.6-.7-1.4-1-2.2-1-1.4 0-2.1.8-2.1 1.7 0 1 .8 1.4 2.2 1.8 1.4.4 2.2.9 2.2 2.1 0 1.1-.9 2-2.3 2-1 0-1.8-.4-2.3-1M19.8 12.8v9.6M19.8 17.6c0-1.7 1-2.6 2.2-2.6s2 .8 2 2.2v5.2M27.2 15.2v7.2M27.2 12.3h.01" />
+        </svg>
       </span>
       {/* Icon only on narrow phones so the header stays on one line; the name is still read out. */}
-      <span className="max-[420px]:sr-only">TypeRight</span>
+      <span className="max-[420px]:sr-only">Typeshi</span>
     </Link>
   )
 }

@@ -1,4 +1,4 @@
-# TypeRight – Plan (v1, awaiting approval)
+# Typeshi – Plan (v1, awaiting approval)
 
 Competitive typing trainer: lessons → practice → ranked tests → live races. Web (Vercel) first, Tauri desktop last, one codebase. Total cost ₱0.
 
@@ -45,7 +45,7 @@ Details: [JOURNEY.md](JOURNEY.md) and [LESSONS.md](LESSONS.md). The clickable de
 
 ## 2. Folder structure
 ```
-typeright/
+typeshi/
 ├─ .github/workflows/keepalive.yml     # cron ping every 3 days
 ├─ supabase/
 │  ├─ migrations/                      # 0001_profiles.sql … numbered, plain SQL

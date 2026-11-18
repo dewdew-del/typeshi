@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { SoundPack } from '../lib/sound'
+import '../lib/migrateKeys'
 
 /** 'auto' follows the visitor's clock (light from 06:00 to 17:59); light and dark force a theme. */
 export type ThemeMode = 'auto' | 'light' | 'dark'
@@ -30,7 +31,7 @@ export const useSettings = create<SettingsState>()(
       set: (patch) => set(patch),
     }),
     {
-      name: 'typeright.settings',
+      name: 'typeshi.settings',
       version: 1,
       // localStorage can throw (private mode, blocked storage); fall back to memory.
       storage: {

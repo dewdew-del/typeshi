@@ -20,7 +20,7 @@ Windows 10/11, so the installer is a few MB instead of shipping a whole browser.
 ## Commands
 - `npm run desktop:dev`: opens the app window on top of the Vite dev server, with hot reload.
 - `npm run desktop:build`: builds the website, then the Windows installer at
-  `src-tauri/target/release/bundle/nsis/TypeRight_0.1.0_x64-setup.exe`.
+  `src-tauri/target/release/bundle/nsis/Typeshi_0.1.0_x64-setup.exe`.
   The first build compiles about 400 Rust crates and takes several minutes; later builds are fast.
 
 The installer installs for the current user only (no admin prompt) and adds a Start menu entry.

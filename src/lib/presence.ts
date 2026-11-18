@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { create } from 'zustand'
 import { supabase } from './supabase'
 
-/** How many people have TypeRight open right now. Nobody is identified: each tab uses a random, throwaway id. */
+/** How many people have Typeshi open right now. Nobody is identified: each tab uses a random, throwaway id. */
 export const useActiveCount = create<{ count: number | null }>()(() => ({ count: null }))
 
 /** Joins the shared "visitors" Realtime channel while the app is open. Mount once at the root. */

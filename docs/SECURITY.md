@@ -1,4 +1,4 @@
-# TypeRight: security notes (reviewed 28 October 2026)
+# Typeshi: security notes (reviewed 28 October 2026)
 
 What protects the site, what was found in the review, and what is still open. Plain language on purpose.
 
@@ -54,9 +54,9 @@ Honest limit: a script that copies a real person's typing rhythm closely can sti
 | 14 | Info | Privacy text was missing technical data and the developer view | Fixed (`src/pages/Privacy.tsx`) |
 
 ## Steps only the owner can do (dashboards)
-1. **Turnstile** (finding 2): free Cloudflare account → Turnstile → add widget for `typeright.vercel.app`, `localhost`, `tauri.localhost` → put the site key in Vercel as `VITE_TURNSTILE_SITE_KEY` and the secret in Supabase → Authentication → Attack Protection. See `docs/SUPABASE_SETUP.md` step 5.
+1. **Turnstile** (finding 2): free Cloudflare account → Turnstile → add widget for `typeshi.vercel.app`, `localhost`, `tauri.localhost` → put the site key in Vercel as `VITE_TURNSTILE_SITE_KEY` and the secret in Supabase → Authentication → Attack Protection. See `docs/SUPABASE_SETUP.md` step 5.
 2. **Password length:** Supabase → Authentication → Sign In / Providers → Email → Minimum password length 8 or more.
-3. **Redirect URLs:** Supabase → Authentication → URL Configuration: list only `https://typeright.vercel.app/**` and your local address. No `*.vercel.app` wildcard.
+3. **Redirect URLs:** Supabase → Authentication → URL Configuration: list only `https://typeshi.vercel.app/**` and your local address. No `*.vercel.app` wildcard.
 4. **Email sending:** the built-in Supabase email only reaches your own team members. If new users must confirm email or reset a password, set up a custom SMTP sender (Authentication → SMTP Settings), or those emails never arrive.
 5. **2-step login** on GitHub, Vercel, Supabase, Google and Cloudflare.
 6. **Rotate the Google client secret** (it was shown in a screenshot) in Google Cloud → APIs & Services → Credentials, then paste the new one in Supabase → Authentication → Providers → Google.

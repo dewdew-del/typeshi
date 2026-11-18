@@ -1,4 +1,5 @@
 import { useEffect, useRef, type CSSProperties, type ReactElement, type RefObject } from 'react'
+import '../../lib/migrateKeys'
 import './wallpapers.css'
 
 /** Text and button colours the landing page uses on top of each wallpaper. */
@@ -477,7 +478,7 @@ export const WALLPAPERS: Wallpaper[] = [
   { id: 'forest', Scene: ForestScene, ink: { light: { onSky: '#0b3a2a', cta: '#0f3a22', ctaFg: '#ffffff', foot: '#ffffff' }, dark: { onSky: '#ffffff', cta: '#ffffff', ctaFg: '#0f3a22', foot: '#ffffff' } } },
 ]
 
-const LAST_KEY = 'typeright.wallpaper'
+const LAST_KEY = 'typeshi.wallpaper'
 
 /** A random wallpaper for this visit, never the same one as the visit before. */
 export function pickWallpaper(): number {

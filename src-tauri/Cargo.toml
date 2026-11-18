@@ -1,7 +1,7 @@
 [package]
-name = "typeright"
+name = "typeshi"
 version = "0.1.0"
-description = "TypeRight desktop app"
+description = "Typeshi desktop app"
 authors = ["Dewdew"]
 license = ""
 repository = ""
@@ -11,7 +11,7 @@ rust-version = "1.90"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "typeright_lib"
+name = "typeshi_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

@@ -15,8 +15,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'favicon.ico', 'apple-touch-icon-180x180.png'],
       manifest: {
-        name: 'TypeRight',
-        short_name: 'TypeRight',
+        name: 'Typeshi',
+        short_name: 'Typeshi',
         description: 'Learn to type with 200 lessons, then race your friends and climb the leaderboard.',
         start_url: '/play',
         scope: '/',

@@ -62,7 +62,7 @@ function usePageTitle() {
   const { pathname } = useLocation()
   useEffect(() => {
     const name = TITLES.find(([re]) => re.test(pathname))?.[1]
-    document.title = name ? `${name} · TypeRight` : 'TypeRight'
+    document.title = name ? `${name} · Typeshi` : 'Typeshi'
   }, [pathname])
 }
 

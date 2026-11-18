@@ -1,6 +1,6 @@
 # Supabase setup (one-time, in the dashboard)
 
-Project: **typeright** (`kibryhwcekdyvvskkepv`, Singapore, free plan).
+Project: **typeshi** (`kibryhwcekdyvvskkepv`, Singapore, free plan).
 Dashboard: https://supabase.com/dashboard/project/kibryhwcekdyvvskkepv
 
 The database (tables, security rules, sign-up trigger) is already set up from `supabase/migrations/`.
@@ -17,7 +17,7 @@ Authentication → Sign In / Providers → Email: on by default.
 - The built-in email sender is only for testing: it sends just a few emails per hour. That is fine for a portfolio. For more, add a free SMTP provider (e.g. Resend) under Authentication → Emails → SMTP.
 
 ## 3. Google login (optional, email works without it)
-1. Go to https://console.cloud.google.com → create a project (free) → APIs & Services → OAuth consent screen: External, app name "TypeRight", your email.
+1. Go to https://console.cloud.google.com → create a project (free) → APIs & Services → OAuth consent screen: External, app name "Typeshi", your email.
 2. Credentials → Create credentials → OAuth client ID → **Web application**.
    - Authorized JavaScript origins: `http://localhost:5173`
    - Authorized redirect URI: `https://kibryhwcekdyvvskkepv.supabase.co/auth/v1/callback`
@@ -31,7 +31,7 @@ Authentication → Sign In / Providers:
 
 ## 5. Human check for sign-ins (Cloudflare Turnstile, free, optional but recommended once live)
 Stops bots from mass-creating guests. Supabase then checks it on log in, guest sign-in and password reset.
-1. https://dash.cloudflare.com → Turnstile → Add widget: name `TypeRight`, hostnames `localhost` and your Vercel domain, mode **Managed**.
+1. https://dash.cloudflare.com → Turnstile → Add widget: name `Typeshi`, hostnames `localhost` and your Vercel domain, mode **Managed**.
 2. Copy the **site key** into `.env` (and the Vercel env vars) as `VITE_TURNSTILE_SITE_KEY`. It is public.
 3. Copy the **secret key** into Supabase: Authentication → Attack Protection → Enable CAPTCHA protection → Turnstile → paste → Save.
    The secret key never goes in the app or in git.
@@ -47,7 +47,7 @@ Then Actions → Keep Supabase awake → Run workflow once and check it goes gre
 If it ever pauses anyway, open the dashboard and press **Restore**.
 
 ## 7. Nightly cleanup (already on)
-A pg_cron job (`typeright-cleanup`, 03:17 UTC) deletes keystroke logs older than 30 days, unused test texts,
+A pg_cron job (`typeshi-cleanup`, 03:17 UTC) deletes keystroke logs older than 30 days, unused test texts,
 old rate-limit rows, abandoned race lobbies, and guest users older than 14 days. Scores are kept.
 
 ## 8. Deploy to Vercel

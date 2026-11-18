@@ -10,11 +10,11 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
     <!-- Start the connection to Supabase (login check, live features) while the page scripts load. -->
     <link rel="preconnect" href="%VITE_SUPABASE_URL%" crossorigin />
-    <title>TypeRight – Learn to type. Race to the top.</title>
+    <title>Typeshi – Learn to type. Race to the top.</title>
     <script>
       // Set the theme before first paint so there is no light/dark flash.
       try {
-        var mode = (JSON.parse(localStorage.getItem('typeright.settings') || '{}').state || {}).theme || 'auto'
+        var mode = (JSON.parse(localStorage.getItem('typeshi.settings') || localStorage.getItem('typeright.settings') || '{}').state || {}).theme || 'auto'
         var h = new Date().getHours()
         document.documentElement.dataset.theme = mode === 'auto' ? (h >= 6 && h < 18 ? 'light' : 'dark') : mode
       } catch (e) {

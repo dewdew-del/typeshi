@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useRouteError } from 'react-router-dom'
 
-const RELOAD_KEY = 'typeright-chunk-reload'
+const RELOAD_KEY = 'typeshi-chunk-reload'
 
 /** True when a page file from an older deploy is gone (the browser still runs the old app shell). */
 export function isStaleChunkError(error: unknown) {
@@ -36,7 +36,7 @@ export function RouteError() {
         {stale ? 'A new version is available' : 'Something went wrong'}
       </h1>
       <p className="mt-2 text-muted">
-        {stale ? 'Reload to get the latest TypeRight.' : 'Reload the page. If it keeps happening, go back to the menu.'}
+        {stale ? 'Reload to get the latest Typeshi.' : 'Reload the page. If it keeps happening, go back to the menu.'}
       </p>
       <button
         type="button"

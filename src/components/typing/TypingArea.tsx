@@ -209,7 +209,7 @@ export const TypingArea = memo(function TypingArea({
 
       {TOUCH_ONLY && (
         <p className="rounded-2xl border border-border bg-accent-soft px-5 py-3 text-center text-sm font-semibold">
-          TypeRight needs a physical keyboard. On a phone or tablet, connect a Bluetooth keyboard, or use a computer.
+          Typeshi needs a physical keyboard. On a phone or tablet, connect a Bluetooth keyboard, or use a computer.
         </p>
       )}
 

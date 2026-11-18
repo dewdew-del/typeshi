@@ -4,6 +4,7 @@ import type { KeyStat } from '../../supabase/functions/_shared/scoring'
 import type { LessonDef } from '../content/lessons/types'
 import { emptyProgress, mergeKeyStats, recordAttempt, type JourneyProgress } from '../engine/progress'
 import { IS_DESKTOP } from '../lib/platform'
+import '../lib/migrateKeys'
 
 /**
  * Journey progress for the current visitor.
@@ -73,6 +74,6 @@ export const useProgress = create<ProgressState>()(
       replace: (progress, ownerId) => set({ progress, ownerId, dirty: false }),
       reset: () => set((s) => ({ progress: emptyProgress(), ownerId: s.ownerId, dirty: false })), // the caller clears the server copy too
     }),
-    { name: 'typeright.progress', version: 1, storage: createJSONStorage(() => progressStorage) },
+    { name: 'typeshi.progress', version: 1, storage: createJSONStorage(() => progressStorage) },
   ),
 )
