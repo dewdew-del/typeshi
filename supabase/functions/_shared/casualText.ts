@@ -1,37 +1,9 @@
 /**
  * Text for casual typing on the leaderboard, chosen by the server: shuffled sentences in English or
- * Filipino. Mirrors src/content/sentences (keep the two in step). Dependency-free (Deno + browser).
+ * Filipino. Pool lives in casualPool.ts (generated from src/content). Dependency-free (Deno + browser).
  */
 
-const EN = [
-  'Small habits shape how fast you type, so keep your wrists relaxed and your eyes on the screen.',
-  'The quick brown fox jumps over the lazy dog while the river runs past the old mill.',
-  'Rest your fingers on the home row and let each one reach for its own keys.',
-  'A steady rhythm beats a fast burst, because every mistake costs you time to fix.',
-  'She packed a light bag, caught the early bus, and watched the city wake up.',
-  'Good typists look at the text, not at their hands, and trust the bumps on F and J.',
-  'We planted mango trees behind the school and watered them every afternoon.',
-  'Practice for ten minutes a day and you will notice the difference within a week.',
-  'The market was loud and bright, full of fresh fish, ripe fruit, and warm bread.',
-  'Accuracy comes first; speed follows once your fingers know where to go.',
-  'My brother fixed the old radio, and now it plays music every morning.',
-  'The rain stopped just in time for the game to start at four.',
-  'Write the main idea first, then add the details one by one.',
-  'Our team met at the library to plan the science fair project.',
-]
-
-const FIL = [
-  'Magandang umaga sa inyong lahat, sana ay masaya ang araw ninyo.',
-  'Maaga akong gumising para mag-aral bago pumasok sa paaralan.',
-  'Kumain kami ng kanin at isda sa bahay ng aking lola kahapon.',
-  'Masarap maglakad sa tabing-dagat habang lumulubog ang araw.',
-  'Huwag kalimutang uminom ng tubig at magpahinga pagkatapos mag-type.',
-  'Ang bawat daliri ay may sariling mga titik na dapat abutin.',
-  'Sabay-sabay kaming nagluto ng adobo para sa handaan sa barangay.',
-  'Mabilis tumakbo ang oras kapag masaya ang iyong ginagawa.',
-  'Tumingin ka sa screen at hindi sa iyong mga kamay habang nagta-type.',
-  'Unti-unti nating matututunan ang tamang paraan ng pagta-type.',
-]
+import { EN, FIL } from './casualPool.ts'
 
 /** mulberry32: small seeded PRNG. */
 function rng(seed: number) {
@@ -45,15 +17,23 @@ function rng(seed: number) {
   }
 }
 
-/** Shuffled sentences, never the same one twice in a row, until at least `minChars` characters. */
+/** Sentences in shuffled order, each used once per pass (no repeats until the pool runs out), until at least `minChars` characters. */
 export function casualText(seed: number, lang: 'en' | 'fil', minChars: number): string {
   const pool = lang === 'fil' ? FIL : EN
   const next = rng(seed)
   const out: string[] = []
   let n = 0
+  let bag: string[] = []
   while (n < minChars) {
-    let s = pool[Math.floor(next() * pool.length)]
-    if (s === out[out.length - 1]) s = pool[(pool.indexOf(s) + 1) % pool.length]
+    if (bag.length === 0) {
+      bag = pool.slice()
+      for (let i = bag.length - 1; i > 0; i--) {
+        const j = Math.floor(next() * (i + 1))
+        ;[bag[i], bag[j]] = [bag[j], bag[i]]
+      }
+      if (bag[bag.length - 1] === out[out.length - 1]) bag.unshift(bag.pop()!)
+    }
+    const s = bag.pop()!
     out.push(s)
     n += s.length + 1
   }
