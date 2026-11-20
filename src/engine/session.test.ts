@@ -1,7 +1,18 @@
 import { describe, expect, it } from 'vitest'
 import { replay } from '../../supabase/functions/_shared/scoring'
 import { keyFromEvent, type KeyLike } from './keys'
-import { createSession, elapsedMs, endSession, extendTarget, isEnded, pressKey, sessionStats } from './session'
+import { createSession, elapsedMs, endSession, extendTarget, isEnded, pressKey, sessionStats, wordBackspaces } from './session'
+
+describe('wordBackspaces (Ctrl+Backspace)', () => {
+  const n = (s: string) => wordBackspaces([...s])
+  it('erases the current word, then a finished word with its space', () => {
+    expect(n('the qui')).toBe(3)
+    expect(n('the quick ')).toBe(6)
+    expect(n('the  ')).toBe(5)
+    expect(n('word')).toBe(4)
+    expect(n('')).toBe(0)
+  })
+})
 
 const type = (s: ReturnType<typeof createSession>, keys: string[], start = 1000, gap = 100) =>
   keys.forEach((k, i) => pressKey(s, k, start + i * gap))

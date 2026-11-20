@@ -1,7 +1,7 @@
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type Ref } from 'react'
 import type { Keystroke, KeyStat, Summary, TypingMode } from '../../../supabase/functions/_shared/scoring'
 import { keyFromEvent } from '../../engine/keys'
-import { elapsedMs, type TypingSession } from '../../engine/session'
+import { elapsedMs, wordBackspaces, type TypingSession } from '../../engine/session'
 import { formatAccuracy, formatTime } from '../../engine/stats'
 import { useTypingSession } from '../../engine/useTypingSession'
 import { playKeySound } from '../../lib/sound'
@@ -120,6 +120,15 @@ export const TypingArea = memo(function TypingArea({
     if (e.key === 'Enter' && onRestart && !e.repeat) {
       e.preventDefault()
       onRestart()
+      return
+    }
+    // Ctrl+Backspace (Option+Backspace on Mac) erases the whole word, sent as plain Backspaces so the server replay stays the same.
+    if (e.key === 'Backspace' && e.nativeEvent.isTrusted && e.ctrlKey !== e.altKey) {
+      e.preventDefault()
+      if (locked) return
+      const n = wordBackspaces(typed)
+      if (n > 0 && sound && !ended) playKeySound(true, soundPack, 'Backspace')
+      for (let i = 0; i < n; i++) onKey('Backspace')
       return
     }
     const key = keyFromEvent(e.nativeEvent)

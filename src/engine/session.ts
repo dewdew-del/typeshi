@@ -56,6 +56,14 @@ export function pressKey(s: TypingSession, key: string, now: number): boolean {
   return true
 }
 
+/** How many Backspaces Ctrl+Backspace means: any spaces right before the cursor, then the word before them. */
+export function wordBackspaces(typed: readonly string[]): number {
+  let i = typed.length
+  while (i > 0 && typed[i - 1] === ' ') i--
+  while (i > 0 && typed[i - 1] !== ' ') i--
+  return typed.length - i
+}
+
 /** Elapsed session time at `now`, stopping at the end or the time limit. */
 export function elapsedMs(s: TypingSession, now: number): number {
   if (s.startedAt === null) return 0
