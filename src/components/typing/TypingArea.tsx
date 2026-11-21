@@ -26,6 +26,8 @@ interface Props {
   timeLimitMs?: number
   /** Fade the keyboard so learners rely on it less ("no-look" practice). */
   dimKeyboard?: boolean
+  /** Always show the keyboard, whatever the setting says (Journey lessons). */
+  alwaysKeyboard?: boolean
   /** Endless mode: called for more text when the end is near. */
   getMore?: () => string
   /** Increment to end the session now ("Finish"). */
@@ -73,6 +75,7 @@ export const TypingArea = memo(function TypingArea({
   mode = 'free',
   timeLimitMs,
   dimKeyboard = false,
+  alwaysKeyboard = false,
   getMore,
   finishSignal = 0,
   locked = false,
@@ -260,7 +263,7 @@ export const TypingArea = memo(function TypingArea({
         )}
       </div>
 
-      {showKeyboard && (
+      {(showKeyboard || alwaysKeyboard) && (
         <div className={dimKeyboard ? 'opacity-45 transition-opacity hover:opacity-100' : ''}>
           <Keyboard activeChar={ended ? undefined : text[cursor]} />
         </div>

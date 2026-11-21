@@ -12,7 +12,6 @@ import { currentLesson, lessonStatus, starsFor } from '../engine/progress'
 import { floorAccuracy, formatTime } from '../engine/stats'
 import { touchStreak } from '../lib/api'
 import { useProgress } from '../storage/progressStore'
-import { useSettings } from '../stores/settings'
 
 const STAR = 'M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z'
 
@@ -55,7 +54,6 @@ export function LessonPage() {
 function Lesson({ lesson }: { lesson: LessonDef }) {
   const navigate = useNavigate()
   const record = useProgress((s) => s.record)
-  const { showKeyboard, set } = useSettings()
   const [attempt, setAttempt] = useState(() => newAttempt(lesson))
   const [result, setResult] = useState<{ wpm: number; accuracy: number; stars: number; durationMs: number } | null>(null)
   const next = LESSONS[lesson.order] // order is 1-based, so this is the following lesson
@@ -76,21 +74,11 @@ function Lesson({ lesson }: { lesson: LessonDef }) {
     setAttempt(newAttempt(lesson))
   }
 
-  const pill = (on: boolean) =>
-    [
-      'rounded-full border px-3.5 py-2 text-sm font-semibold',
-      on ? 'border-accent bg-accent text-accent-contrast' : 'border-border bg-surface text-muted hover:text-text',
-    ].join(' ')
 
   return (
     <main className="mx-auto flex max-w-[960px] flex-col gap-6 px-6 pb-16 pt-2">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-bold tracking-tight">Lesson {lesson.order}</h1>
-        {lesson.type !== 'intro' && (
-          <div className="flex gap-2">
-            <button type="button" aria-pressed={showKeyboard} className={pill(showKeyboard)} onClick={() => set({ showKeyboard: !showKeyboard })}>Keyboard</button>
-          </div>
-        )}
       </div>
 
       {lesson.type === 'intro' ? (
@@ -110,6 +98,7 @@ function Lesson({ lesson }: { lesson: LessonDef }) {
             target={attempt.text}
             mode={lesson.mode}
             timeLimitMs={lesson.timeLimitMs}
+            alwaysKeyboard
             dimKeyboard={lesson.stage >= 3}
             onFinish={onFinish}
           />

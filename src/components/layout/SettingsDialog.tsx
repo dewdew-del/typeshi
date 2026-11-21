@@ -131,7 +131,7 @@ export function SettingsDialog() {
 
       <Section title="Typing">
         <Row label="On-screen keyboard">
-          <Switch label="On-screen keyboard in every mode" checked={showKeyboard} onChange={(v) => set({ showKeyboard: v })} />
+          <Switch label="On-screen keyboard outside lessons (lessons always show it)" checked={showKeyboard} onChange={(v) => set({ showKeyboard: v })} />
         </Row>
       </Section>
     </Overlay>
