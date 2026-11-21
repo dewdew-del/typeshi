@@ -145,7 +145,7 @@ export function Letters() {
           </div>
         </ResultsView>
       ) : (
-        <TypingArea key={round} target={text} showKeyboard timeLimitMs={Number(seconds) * 1000} getMore={feed} onRestart={() => start(letter)} onFinish={onFinish} />
+        <TypingArea key={round} target={text} timeLimitMs={Number(seconds) * 1000} getMore={feed} onRestart={() => start(letter)} onFinish={onFinish} />
       )}
     </main>
   )

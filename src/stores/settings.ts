@@ -25,7 +25,7 @@ export const useSettings = create<SettingsState>()(
       theme: 'auto',
       sound: true,
       soundPack: 'softmech',
-      showKeyboard: true,
+      showKeyboard: false, // off by default; turned on in Settings, applies to every typing mode
       textSize: 'md',
       font: 'mono',
       set: (patch) => set(patch),

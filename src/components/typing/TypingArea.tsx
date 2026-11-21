@@ -24,7 +24,6 @@ interface Props {
   mode?: TypingMode
   /** Timed test length; omit for "type the whole text". */
   timeLimitMs?: number
-  showKeyboard?: boolean
   /** Fade the keyboard so learners rely on it less ("no-look" practice). */
   dimKeyboard?: boolean
   /** Endless mode: called for more text when the end is near. */
@@ -73,7 +72,6 @@ export const TypingArea = memo(function TypingArea({
   target,
   mode = 'free',
   timeLimitMs,
-  showKeyboard = false,
   dimKeyboard = false,
   getMore,
   finishSignal = 0,
@@ -83,7 +81,7 @@ export const TypingArea = memo(function TypingArea({
   onFinish,
 }: Props) {
   const { session, stats, ended, onKey, extend, finish, now } = useTypingSession(target, mode, timeLimitMs)
-  const { sound, soundPack, textSize, font } = useSettings()
+  const { sound, soundPack, textSize, font, showKeyboard } = useSettings()
   const boxRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const cursorRef = useRef<HTMLSpanElement>(null)

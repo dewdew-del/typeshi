@@ -101,7 +101,7 @@ export function Practice() {
           </div>
         </ResultsView>
       ) : (
-        <TypingArea key={n} target={round.text} showKeyboard timeLimitMs={Number(seconds) * 1000} getMore={round.feed} onRestart={again} onFinish={onFinish} />
+        <TypingArea key={n} target={round.text} timeLimitMs={Number(seconds) * 1000} getMore={round.feed} onRestart={again} onFinish={onFinish} />
       )}
     </main>
   )

@@ -110,7 +110,6 @@ function Lesson({ lesson }: { lesson: LessonDef }) {
             target={attempt.text}
             mode={lesson.mode}
             timeLimitMs={lesson.timeLimitMs}
-            showKeyboard={showKeyboard}
             dimKeyboard={lesson.stage >= 3}
             onFinish={onFinish}
           />
