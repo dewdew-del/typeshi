@@ -111,7 +111,7 @@ function ModeCard({ to, title, art }: { to: string; title: string; art: ReactNod
       className="flex flex-col overflow-hidden rounded-3xl border border-border bg-surface transition duration-150 hover:-translate-y-1 hover:border-accent hover:shadow-[0_12px_28px_rgba(15,23,42,0.10)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
     >
       {art}
-      <div className="px-6 py-[22px] text-center text-[22px] font-bold tracking-tight">{title}</div>
+      <div className="px-4 py-4 text-center text-lg font-bold tracking-tight">{title}</div>
     </Link>
   )
 }
@@ -120,7 +120,7 @@ export function Modes() {
   return (
     <main className="mx-auto max-w-[1120px] px-6 pb-16 pt-9">
       <h1 className="mb-8 text-center text-3xl font-bold tracking-tight sm:text-4xl">How do you want to type today?</h1>
-      <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ModeCard to="/journey" title="Journey" art={<JourneyArt />} />
         <ModeCard to="/friends" title="Play with friends" art={<FriendsArt />} />
         <ModeCard to="/casual/play" title="Casual typing" art={<CasualArt />} />
