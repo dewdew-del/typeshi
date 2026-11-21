@@ -6,6 +6,7 @@ import { formatAccuracy, formatTime } from '../../engine/stats'
 import { useTypingSession } from '../../engine/useTypingSession'
 import { playKeySound } from '../../lib/sound'
 import { useSettings, type TextSize } from '../../stores/settings'
+import { useHistory } from '../../storage/historyStore'
 import { FONT_FAMILY } from '../../lib/fonts'
 import { Keyboard } from '../keyboard/Keyboard'
 
@@ -113,6 +114,7 @@ export const TypingArea = memo(function TypingArea({
   useEffect(() => {
     if (!ended || reported.current === session) return
     reported.current = session
+    if (stats.keystrokes >= 20) useHistory.getState().add({ t: Date.now(), wpm: stats.wpm, accuracy: stats.accuracy })
     onFinish?.({ summary: stats, log: session.log.slice(), keyStats: session.replay.keyStats, target: text, mode })
   }, [ended, session, stats, onFinish, text, mode])
 

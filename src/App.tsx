@@ -46,6 +46,8 @@ const router = createBrowserRouter([
       { path: 'race/:roomId', lazy: async () => ({ Component: (await import('./pages/RaceRoom')).RaceRoom }) },
       { path: 'casual', lazy: async () => ({ Component: (await import('./pages/Casual')).CasualSetup }) },
       { path: 'casual/play', lazy: async () => ({ Component: (await import('./pages/Casual')).CasualPlay }) },
+      { path: 'progress', lazy: async () => ({ Component: (await import('./pages/Progress')).Progress }) },
+      { path: 'letters', lazy: async () => ({ Component: (await import('./pages/Letters')).Letters }) },
       { path: 'practice', lazy: async () => ({ Component: (await import('./pages/Practice')).Practice }) },
       { path: 'login', lazy: async () => ({ Component: (await import('./pages/Login')).Login }) },
       { path: 'profile', element: <OpenProfile /> },

@@ -30,7 +30,7 @@ export const Keyboard = memo(function Keyboard({ activeChar, pressedCode, colorF
     <div
       role="img"
       aria-label={label}
-      className="mx-auto w-full max-w-4xl select-none rounded-2xl border border-border bg-surface p-2 shadow-sm sm:p-3"
+      className="mx-auto w-full max-w-2xl select-none rounded-2xl border border-border bg-surface p-2 shadow-sm sm:p-3"
     >
       <div className="flex flex-col gap-1 sm:gap-1.5">
         {QWERTY.rows.map((row, ri) => (

@@ -82,6 +82,28 @@ function CasualArt() {
   )
 }
 
+function LettersArt() {
+  const keys = [
+    { x: 54, y: 44, c: 'E' },
+    { x: 118, y: 44, c: 'R' },
+    { x: 182, y: 44, c: 'T' },
+    { x: 86, y: 110, c: 'S' },
+    { x: 150, y: 110, c: 'D' },
+  ]
+  return (
+    <svg viewBox="0 0 320 210" role="img" aria-label="Letter keys with one highlighted" className="block h-auto w-full bg-art-bg">
+      {keys.map(({ x, y, c }) => (
+        <g key={c}>
+          <rect className={c === 'S' ? 'art-t1' : 'art-fs art-s3'} x={x} y={y} width="52" height="52" rx="12" strokeWidth="2" />
+          <text x={x + 26} y={y + 34} textAnchor="middle" fontSize="24" fontWeight="800" fill={c === 'S' ? 'var(--accent-contrast)' : 'var(--accent)'}>{c}</text>
+        </g>
+      ))}
+      <path className="art-t4" d="M214 110h70a12 12 0 0 1 12 12v28a12 12 0 0 1-12 12h-70a12 12 0 0 1-12-12v-28a12 12 0 0 1 12-12z" />
+      <text x="249" y="143" textAnchor="middle" fontSize="13" fontWeight="800" fill="var(--accent)">A–Z</text>
+    </svg>
+  )
+}
+
 function ModeCard({ to, title, art }: { to: string; title: string; art: ReactNode }) {
   return (
     <Link
@@ -102,6 +124,7 @@ export function Modes() {
         <ModeCard to="/journey" title="Journey" art={<JourneyArt />} />
         <ModeCard to="/friends" title="Play with friends" art={<FriendsArt />} />
         <ModeCard to="/casual/play" title="Casual typing" art={<CasualArt />} />
+        <ModeCard to="/letters" title="Practice a letter" art={<LettersArt />} />
       </div>
     </main>
   )
