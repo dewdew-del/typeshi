@@ -1,13 +1,10 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ResultsView } from '../components/results/ResultsView'
 import { TypingArea, type TypingResult } from '../components/typing/TypingArea'
 import { Choice } from '../components/ui/Choice'
 import type { KeyStat } from '../../supabase/functions/_shared/scoring'
-import { COMMON_WORDS } from '../content/words/common'
-import { WORDS_EN } from '../content/words/en'
-
-const ALL_WORDS = [...new Set([...WORDS_EN, ...COMMON_WORDS])]
+import { wordFeed } from '../engine/wordFeed'
 import { touchStreak } from '../lib/api'
 import { useProgress } from '../storage/progressStore'
 
@@ -35,34 +32,6 @@ function adaptive(keyStats: Record<string, KeyStat>): { unlocked: string[]; focu
   return { unlocked, focus }
 }
 
-const count = (w: string, l: string) => [...w].filter((c) => c === l).length
-
-/**
- * Endless supply of real English words that contain the letter, the ones with the most of it first.
- * No word repeats until the whole list has been used.
- * `allowed` limits the words to the unlocked letters (adaptive mode); with too few left it uses any word with the letter.
- */
-function wordFeed(letter: string, allowed?: Set<string>): () => string {
-  let pool = ALL_WORDS.filter((w) => w.includes(letter) && (!allowed || [...w].every((c) => allowed.has(c))))
-  if (pool.length < 25) pool = ALL_WORDS.filter((w) => w.includes(letter))
-  let bag: string[] = []
-  const refill = () => {
-    // Lower score first: a random number divided by the letter's share of the word (popped from the end of the bag).
-    bag = pool
-      .map((w) => ({ w, s: Math.random() / (count(w, letter) / w.length) }))
-      .sort((x, y) => y.s - x.s)
-      .map((x) => x.w)
-  }
-  return () => {
-    const out: string[] = []
-    for (let i = 0; i < 20; i++) {
-      if (bag.length === 0) refill()
-      out.push(bag.pop() as string)
-    }
-    return out.join(' ')
-  }
-}
-
 /** Pick one letter, then type words that are full of it. */
 export function Letters() {
   const addKeyStats = useProgress((s) => s.addKeyStats)
@@ -75,7 +44,7 @@ export function Letters() {
   const [letter, setLetter] = useState<string | null>(initial)
   const [focus, setFocus] = useState(initial ?? '')
   const [unlocked, setUnlocked] = useState<string[]>([])
-  const [feed, setFeed] = useState<() => string>(() => (initial ? wordFeed(initial) : () => ''))
+  const [feed, setFeed] = useState<() => string>(() => (initial ? wordFeed({ [initial]: 1 }) : () => ''))
   const [text, setText] = useState(() => (initial ? feed() : ''))
   const [round, setRound] = useState(0)
   const [result, setResult] = useState<TypingResult | null>(null)
@@ -87,10 +56,10 @@ export function Letters() {
       const a = adaptive(useProgress.getState().progress.keyStats)
       setUnlocked(a.unlocked)
       f = a.focus
-      next = wordFeed(f, new Set(a.unlocked))
+      next = wordFeed({ [f]: 1 }, new Set(a.unlocked))
     } else {
       f = l
-      next = wordFeed(l)
+      next = wordFeed({ [l]: 1 })
     }
     setLetter(l)
     setFocus(f)
@@ -108,6 +77,20 @@ export function Letters() {
     },
     [addKeyStats],
   )
+
+  // Enter is the shortcut for Practice again on the results screen.
+  useEffect(() => {
+    if (!result || !letter) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Enter' || e.repeat) return
+      if ((e.target as HTMLElement | null)?.closest('a, button, input, select, textarea')) return
+      e.preventDefault()
+      start(letter)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- start only uses setters and the letter
+  }, [result, letter])
 
   if (!letter) {
     return (
