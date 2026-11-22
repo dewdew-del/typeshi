@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ResultsView } from '../components/results/ResultsView'
 import { TypingArea, type TypingResult } from '../components/typing/TypingArea'
@@ -78,9 +78,13 @@ export function Letters() {
   )
 
   // Back button (or browser back) removed the letter from the address: show the picker again.
+  // Only react when the letter LEAVES the address: right after a click the address can lag one render behind.
+  const lastK = useRef(params.get('k'))
   useEffect(() => {
-    if (!params.get('k') && letter) setLetter(null)
-  }, [params, letter])
+    const k = params.get('k')
+    if (lastK.current && !k) setLetter(null)
+    lastK.current = k
+  }, [params])
 
   // Enter is the shortcut for Practice again on the results screen.
   useEffect(() => {
