@@ -171,7 +171,6 @@ export function Letters() {
       </div>
       {result ? (
         <ResultsView result={result} compact>
-          {!didPass && <p className="font-semibold">Get {PASS_ACCURACY}% accuracy to pass {focus.toUpperCase()}.</p>}
           <div className="flex flex-wrap gap-3 pt-1">
             {next && (
               <button type="button" onClick={() => start(next)} className="rounded-xl bg-accent px-8 py-3.5 text-[17px] font-bold text-accent-contrast hover:opacity-90">Next</button>
