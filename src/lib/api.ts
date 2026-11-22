@@ -118,11 +118,11 @@ export async function getPublicProfile(username: string) {
   return { stats, recent: (recent ?? []) as RecentResult[] }
 }
 
-/** The fastest saved (server-checked) result of this player, any mode; null when offline or none. */
-export async function getBestWpm(userId: string): Promise<number | null> {
-  if (!supabase) return null
-  const { data } = await supabase.from('results').select('wpm').eq('user_id', userId).order('wpm', { ascending: false }).limit(1)
-  return (data?.[0] as { wpm: number } | undefined)?.wpm ?? null
+/** This player's saved (server-checked) results, oldest first, as time + WPM; empty when offline. */
+export async function getMyRuns(userId: string): Promise<{ t: number; wpm: number }[]> {
+  if (!supabase) return []
+  const { data } = await supabase.from('results').select('wpm, created_at').eq('user_id', userId).order('created_at', { ascending: true }).limit(1000)
+  return ((data ?? []) as { wpm: number; created_at: string }[]).map((r) => ({ t: Date.parse(r.created_at), wpm: r.wpm }))
 }
 
 // ------------------------------------------------------------------ streaks, badges

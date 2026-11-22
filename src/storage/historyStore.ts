@@ -27,3 +27,12 @@ export const useHistory = create<{ points: HistoryPoint[]; add: (p: HistoryPoint
     },
   ),
 )
+
+/** Each time a run beat every run before it, oldest first: the personal-best history. */
+export function personalBests(runs: { t: number; wpm: number }[]): { t: number; wpm: number }[] {
+  const out: { t: number; wpm: number }[] = []
+  for (const r of [...runs].sort((a, b) => a.t - b.t)) {
+    if (r.wpm > (out[out.length - 1]?.wpm ?? 0)) out.push(r)
+  }
+  return out
+}
