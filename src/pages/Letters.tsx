@@ -171,14 +171,10 @@ export function Letters() {
       </div>
       {result ? (
         <ResultsView result={result} compact>
-          <p className="font-semibold">
-            {didPass
-              ? `Passed ${focus.toUpperCase()}!${ALPHABET.indexOf(focus) >= 3 && next ? ` ${next.toUpperCase()} is unlocked.` : ''}`
-              : `Get ${PASS_ACCURACY}% accuracy to pass ${focus.toUpperCase()}.`}
-          </p>
+          {!didPass && <p className="font-semibold">Get {PASS_ACCURACY}% accuracy to pass {focus.toUpperCase()}.</p>}
           <div className="flex flex-wrap gap-3 pt-1">
             {next && (
-              <button type="button" onClick={() => start(next)} className="rounded-xl bg-accent px-8 py-3.5 text-[17px] font-bold text-accent-contrast hover:opacity-90">Next: {next.toUpperCase()}</button>
+              <button type="button" onClick={() => start(next)} className="rounded-xl bg-accent px-8 py-3.5 text-[17px] font-bold text-accent-contrast hover:opacity-90">Next</button>
             )}
             <button type="button" onClick={() => start(letter)} className={next ? 'rounded-xl border border-border bg-surface px-7 py-3.5 text-[17px] font-bold hover:bg-surface-2' : 'rounded-xl bg-accent px-8 py-3.5 text-[17px] font-bold text-accent-contrast hover:opacity-90'}>Practice again</button>
           </div>
