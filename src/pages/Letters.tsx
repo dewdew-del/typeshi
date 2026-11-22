@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { ResultsView } from '../components/results/ResultsView'
 import { TypingArea, type TypingResult } from '../components/typing/TypingArea'
 import { Choice } from '../components/ui/Choice'
@@ -77,6 +77,11 @@ export function Letters() {
     [addKeyStats, pass, focus],
   )
 
+  const didPass = !!result && result.summary.accuracy >= PASS_ACCURACY && result.summary.keystrokes >= 30
+  // After a pass, the next letter (if it is open now); not in adaptive practice.
+  const after = ALPHABET[ALPHABET.indexOf(focus) + 1]
+  const next = didPass && letter !== AUTO && after && ALPHABET.indexOf(after) < open ? after : null
+
   // Back button (or browser back) removed the letter from the address: show the picker again.
   // Only react when the letter LEAVES the address: right after a click the address can lag one render behind.
   const lastK = useRef(params.get('k'))
@@ -93,12 +98,12 @@ export function Letters() {
       if (e.key !== 'Enter' || e.repeat) return
       if ((e.target as HTMLElement | null)?.closest('a, button, input, select, textarea')) return
       e.preventDefault()
-      start(letter)
+      start(next ?? letter) // Enter: next letter after a pass, otherwise the same one again
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- start only uses setters and the letter
-  }, [result, letter])
+  }, [result, letter, next])
 
   if (!letter) {
     return (
@@ -165,15 +170,17 @@ export function Letters() {
         </div>
       </div>
       {result ? (
-        <ResultsView result={result}>
+        <ResultsView result={result} compact>
           <p className="font-semibold">
-            {result.summary.accuracy >= PASS_ACCURACY && result.summary.keystrokes >= 30
-              ? `Passed ${focus.toUpperCase()}!${ALPHABET.indexOf(focus) >= 3 && ALPHABET.indexOf(focus) + 1 < ALPHABET.length && letter !== AUTO ? ` ${ALPHABET[ALPHABET.indexOf(focus) + 1].toUpperCase()} is unlocked.` : ''}`
+            {didPass
+              ? `Passed ${focus.toUpperCase()}!${ALPHABET.indexOf(focus) >= 3 && next ? ` ${next.toUpperCase()} is unlocked.` : ''}`
               : `Get ${PASS_ACCURACY}% accuracy to pass ${focus.toUpperCase()}.`}
           </p>
           <div className="flex flex-wrap gap-3 pt-1">
-            <button type="button" onClick={() => start(letter)} className="rounded-xl bg-accent px-8 py-3.5 text-[17px] font-bold text-accent-contrast hover:opacity-90">Practice again</button>
-            <Link to="/play" className="rounded-xl border border-border bg-surface px-7 py-3.5 text-[17px] font-bold hover:bg-surface-2">Back to menu</Link>
+            {next && (
+              <button type="button" onClick={() => start(next)} className="rounded-xl bg-accent px-8 py-3.5 text-[17px] font-bold text-accent-contrast hover:opacity-90">Next: {next.toUpperCase()}</button>
+            )}
+            <button type="button" onClick={() => start(letter)} className={next ? 'rounded-xl border border-border bg-surface px-7 py-3.5 text-[17px] font-bold hover:bg-surface-2' : 'rounded-xl bg-accent px-8 py-3.5 text-[17px] font-bold text-accent-contrast hover:opacity-90'}>Practice again</button>
           </div>
         </ResultsView>
       ) : (

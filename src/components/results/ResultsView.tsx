@@ -3,7 +3,8 @@ import { formatAccuracy, formatTime, keyLabel, slowestKeys, topMissedKeys, wpmSe
 import type { TypingResult } from '../typing/TypingArea'
 
 /** Results for an unranked attempt: speed, accuracy, time, speed chart and keys to practice. */
-export function ResultsView({ result, children }: { result: TypingResult; children?: ReactNode }) {
+/** `compact` shows only speed, accuracy and time (letter practice). */
+export function ResultsView({ result, compact = false, children }: { result: TypingResult; compact?: boolean; children?: ReactNode }) {
   const { summary } = result
   const series = wpmSeries(result.target, result.log, result.mode, summary.durationMs)
   // Only the keys, never the space bar.
@@ -24,14 +25,14 @@ export function ResultsView({ result, children }: { result: TypingResult; childr
         <Tile label="Time" value={formatTime(summary.durationMs)} />
       </section>
 
-      {series.length >= 2 && (
+      {!compact && series.length >= 2 && (
         <section aria-label="Speed over time" className="rounded-[18px] border border-border bg-surface px-5 py-3.5">
           <div className="mb-1 text-sm font-bold">Speed over time</div>
           <div className="mx-auto max-w-[480px]"><SpeedChart series={series} seconds={Math.round(summary.durationMs / 1000)} /></div>
         </section>
       )}
 
-      <section className="flex flex-col gap-2.5 rounded-[18px] border border-border bg-surface px-5 py-3.5">
+      {!compact && <section className="flex flex-col gap-2.5 rounded-[18px] border border-border bg-surface px-5 py-3.5">
         <div className="text-sm font-bold">Keys to practice</div>
         {keys.length === 0 ? (
           <p className="text-sm text-muted">No problem keys this time. Nice work.</p>
@@ -42,7 +43,7 @@ export function ResultsView({ result, children }: { result: TypingResult; childr
             ))}
           </div>
         )}
-      </section>
+      </section>}
 
       {children}
     </div>
