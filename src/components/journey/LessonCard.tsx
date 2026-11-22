@@ -54,14 +54,14 @@ export const LessonCard = memo(function LessonCard({ lesson, status, stars, targ
         'flex scroll-mt-32 flex-col overflow-hidden rounded-[18px] text-text transition duration-150 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(15,23,42,0.10)] motion-reduce:transition-none motion-reduce:hover:translate-y-0',
         lesson.type === 'checkpoint' ? 'bg-accent-soft' : 'bg-surface',
         current ? 'border-2 border-accent' : 'border border-border',
-        muted ? 'opacity-[0.88]' : '',
+        locked ? 'opacity-60 grayscale' : muted ? 'opacity-[0.88]' : '',
       ].join(' ')}
       aria-label={`Lesson ${lesson.order}: ${lesson.title}. ${status === 'done' ? `${stars} of 3 stars` : status === 'current' ? 'Up next' : status === 'skipped' ? 'Skipped' : 'Locked'}`}
     >
       <div className="relative h-[100px] overflow-hidden bg-art-bg">
         <div aria-hidden className="absolute -bottom-[70%] -left-1/4 h-[110%] w-[95%] rounded-full" style={{ background: 'color-mix(in srgb, var(--accent) 11%, var(--surface))' }} />
         <div aria-hidden className="absolute -bottom-[78%] -right-[30%] h-[115%] w-[105%] rounded-full" style={{ background: 'color-mix(in srgb, var(--accent) 22%, var(--surface))' }} />
-        <div className="absolute inset-0 flex items-center justify-center gap-1.5" aria-hidden>
+        <div className={`absolute inset-0 flex items-center justify-center gap-1.5 ${locked ? 'opacity-30' : ''}`} aria-hidden>
           {isKeys ? (
             tiles(lesson.keys).map((t, i) => (
               <span
@@ -96,12 +96,14 @@ export const LessonCard = memo(function LessonCard({ lesson, status, stars, targ
           )}
           {current && <Pill className="bg-accent text-accent-contrast">Start</Pill>}
           {status === 'skipped' && <Pill className="bg-accent-soft text-accent">Skipped</Pill>}
-          {locked && (
-            <span className="grid h-[26px] w-[26px] place-items-center rounded-full bg-surface">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
-            </span>
-          )}
         </span>
+        {locked && (
+          <span className="absolute inset-0 grid place-items-center" aria-hidden>
+            <span className="grid h-12 w-12 place-items-center rounded-full border-2 border-border bg-surface">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+            </span>
+          </span>
+        )}
       </div>
       <div className="border-t border-border px-3 pb-3.5 pt-3 text-center">
         <div className="text-[15px] font-bold tracking-tight">{lesson.title}</div>

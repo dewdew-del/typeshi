@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef } from 'react'
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../storage/authStore'
 import { useUi } from '../../stores/settings'
 import { Avatar } from './Avatar'
@@ -156,11 +156,19 @@ function Panels() {
 /** Arrow to the page one step up, shown on every page below the mode menu. */
 function BackButton() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const back = BACK.find(([re]) => re.test(pathname))
   if (!back) return null
   return (
     <Link
       to={back[1]}
+      onClick={(e) => {
+        // Go back to the screen you came from; the menu link is only the fallback for a page opened directly.
+        if ((window.history.state?.idx ?? 0) > 0) {
+          e.preventDefault()
+          navigate(-1)
+        }
+      }}
       aria-label={back[2]}
       title={back[2]}
       className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full border border-border bg-surface text-text hover:bg-surface-2"
