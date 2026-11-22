@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { LESSONS, STAGE_NAMES } from '../content/lessons/catalog'
 import { formatAccuracy, keyLabel, slowestKeys, topMissedKeys } from '../engine/stats'
+import { getBestWpm } from '../lib/api'
+import { useAuth } from '../storage/authStore'
 import { useHistory } from '../storage/historyStore'
 import { useProgress } from '../storage/progressStore'
 
@@ -43,7 +46,15 @@ export function Progress() {
   const records = Object.values(lessons)
   const passed = records.filter((r) => r.passed).length
   const stars = records.reduce((n, r) => n + r.stars, 0)
-  const bestWpm = records.reduce((n, r) => Math.max(n, r.bestWpm), 0)
+  const history = useHistory((s) => s.points)
+  // Signed in: the leaderboard keeps runs from before this device started saving history.
+  const userId = useAuth((s) => s.user?.id)
+  const [serverBest, setServerBest] = useState(0)
+  useEffect(() => {
+    if (userId) void getBestWpm(userId).then((w) => setServerBest(w ?? 0))
+  }, [userId])
+  // Fastest of every mode: Journey lessons plus every finished attempt saved for the speed chart (casual, practice, races).
+  const bestWpm = Math.max(records.reduce((n, r) => Math.max(n, r.bestWpm), 0), ...history.map((p) => p.wpm), serverBest)
   const keys = Object.values(keyStats)
   const attempts = keys.reduce((n, k) => n + k.attempts, 0)
   const misses = keys.reduce((n, k) => n + k.misses, 0)

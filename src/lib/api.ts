@@ -118,6 +118,13 @@ export async function getPublicProfile(username: string) {
   return { stats, recent: (recent ?? []) as RecentResult[] }
 }
 
+/** The fastest saved (server-checked) result of this player, any mode; null when offline or none. */
+export async function getBestWpm(userId: string): Promise<number | null> {
+  if (!supabase) return null
+  const { data } = await supabase.from('results').select('wpm').eq('user_id', userId).order('wpm', { ascending: false }).limit(1)
+  return (data?.[0] as { wpm: number } | undefined)?.wpm ?? null
+}
+
 // ------------------------------------------------------------------ streaks, badges
 
 export async function touchStreak(): Promise<void> {
