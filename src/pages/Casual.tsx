@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { ResultsView } from '../components/results/ResultsView'
 import { TypingArea, type TypingResult } from '../components/typing/TypingArea'
 import { Choice } from '../components/ui/Choice'
-import { EN as SENTENCES_EN, FIL as SENTENCES_FIL } from '../../supabase/functions/_shared/casualPool'
+import { STORIES_EN_CASUAL, STORIES_FIL_CASUAL } from '../content/stories'
 import { createRng } from '../engine/rng'
 import { CASUAL_MODES, issueCasual, submitResult, touchStreak, type CasualMode, type IssuedTest, type RankedResult } from '../lib/api'
 import { useOnline } from '../lib/online'
@@ -75,16 +75,23 @@ export function CasualSetup() {
   )
 }
 
-/** Endless supply of sentences in the chosen language, never the same one twice in a row. */
-function sentenceFeed(lang: Lang, seed: number) {
-  const pool = lang === 'fil' ? SENTENCES_FIL : SENTENCES_EN
+/**
+ * Offline and guest text: the same stories the server uses, built into the app. Shuffled, and none repeats
+ * until all of them have been typed (then a new shuffle).
+ */
+function storyFeed(lang: Lang, seed: number) {
+  const pool = lang === 'fil' ? STORIES_FIL_CASUAL : STORIES_EN_CASUAL
   const rng = createRng(seed)
-  let last = ''
+  let bag: string[] = []
   return () => {
-    let s = rng.pick(pool)
-    if (s === last && pool.length > 1) s = pool[(pool.indexOf(s) + 1) % pool.length]
-    last = s
-    return s
+    if (bag.length === 0) {
+      bag = pool.map((s) => s.body)
+      for (let i = bag.length - 1; i > 0; i--) {
+        const j = rng.int(0, i)
+        ;[bag[i], bag[j]] = [bag[j], bag[i]]
+      }
+    }
+    return bag.pop() as string
   }
 }
 
@@ -106,7 +113,7 @@ export function CasualPlay() {
   const [issueError, setIssueError] = useState<string | null>(null)
   const [verified, setVerified] = useState<{ result?: RankedResult; error?: string } | null>(null)
 
-  const feed = useMemo(() => sentenceFeed(lang, round), [lang, round])
+  const feed = useMemo(() => storyFeed(lang, round), [lang, round])
   const firstText = useMemo(() => [feed(), feed()].join(' '), [feed])
 
   // Signed in: the server picks the text so the run can count for the leaderboard.

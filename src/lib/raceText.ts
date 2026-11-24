@@ -80,7 +80,7 @@ function numbersText(rng: Rng, tier: Tier): string {
  */
 export async function raceText(type: RaceTextType, difficulty: Difficulty = 'Medium', seed = Math.floor(Math.random() * 2 ** 31)): Promise<string> {
   const tier = TIER[difficulty]
-  const [{ RACE_SENTENCES }, { RACE_QUOTES }, { RACE_PARAGRAPHS }, { RACE_PUNCTUATION }, { RACE_CODE }, { RACE_FIL_SENTENCES, RACE_FIL_WORDS }, { RACE_WORDS }] =
+  const [{ RACE_SENTENCES }, { RACE_QUOTES }, { RACE_PARAGRAPHS }, { RACE_PUNCTUATION }, { RACE_CODE }, { RACE_FIL_SENTENCES, RACE_FIL_WORDS }, { RACE_WORDS }, extra, stories] =
     await Promise.all([
       import('../content/race/sentences'),
       import('../content/race/quotes'),
@@ -89,16 +89,21 @@ export async function raceText(type: RaceTextType, difficulty: Difficulty = 'Med
       import('../content/race/code'),
       import('../content/race/fil'),
       import('../content/race/words'),
+      import('../content/race/extra'),
+      import('../content/stories'),
     ])
 
   const rng = createRng(seed)
   const pickN = (pool: readonly string[], n: number) => Array.from({ length: n }, () => rng.pick(pool)).join(' ')
   // Medium keeps the older texts too; Easy and Hard have their own sets.
-  const pool = (extra: readonly string[], fresh: Record<Tier, string[]>): readonly string[] => (tier === 'medium' ? [...extra, ...fresh.medium] : fresh[tier])
+  const pool = (older: readonly string[], fresh: Record<Tier, string[]>, more: Record<Tier, string[]>): readonly string[] =>
+    [...(tier === 'medium' ? older : []), ...fresh[tier], ...more[tier]]
+  // The casual stories (about 200 characters) count as medium and hard paragraphs.
+  const storyBodies = (list: { body: string }[]) => (tier === 'easy' ? [] : list.map((s) => s.body))
 
-  const sentences = pool(SENTENCES_EN, RACE_SENTENCES)
-  const quotes = pool(PROVERBS_EN, RACE_QUOTES)
-  const filSentences = pool(SENTENCES_FIL, RACE_FIL_SENTENCES)
+  const sentences = pool(SENTENCES_EN, RACE_SENTENCES, extra.EXTRA_SENTENCES)
+  const quotes = pool(PROVERBS_EN, RACE_QUOTES, extra.EXTRA_QUOTES)
+  const filSentences = [...pool(SENTENCES_FIL, RACE_FIL_SENTENCES, extra.EXTRA_FIL_SENTENCES), ...storyBodies(stories.STORIES_FIL_CASUAL)]
 
   let text: string
   switch (type) {
@@ -112,13 +117,13 @@ export async function raceText(type: RaceTextType, difficulty: Difficulty = 'Med
       text = pickN(quotes, 3)
       break
     case 'Paragraphs':
-      text = rng.pick(pool(STORIES_EN, RACE_PARAGRAPHS))
+      text = rng.pick([...pool(STORIES_EN, RACE_PARAGRAPHS, extra.EXTRA_PARAGRAPHS), ...storyBodies(stories.STORIES_EN_CASUAL)])
       break
     case 'Numbers':
       text = numbersText(rng, tier)
       break
     case 'Punctuation':
-      text = pickN(pool(DIALOGUE_EN, RACE_PUNCTUATION), tier === 'easy' ? 3 : 2)
+      text = pickN(tier === 'medium' ? [...DIALOGUE_EN, ...RACE_PUNCTUATION.medium] : RACE_PUNCTUATION[tier], tier === 'easy' ? 3 : 2)
       break
     case 'Code snippets':
       text = pickN(RACE_CODE[tier], tier === 'easy' ? 6 : 2)

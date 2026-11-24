@@ -1,4 +1,8 @@
+import { COMMON_WORDS } from '../words/common'
 import { WORDS_EN } from '../words/en'
+
+// The curated list plus about 5,500 common dictionary words, so races rarely repeat a word.
+const ALL = [...new Set([...WORDS_EN, ...COMMON_WORDS])]
 import type { Tiers } from './sentences'
 
 /** English words by difficulty. Easy: up to 4 letters. Medium: 5 to 7. Hard: long and tricky words. Plain ASCII. */
@@ -15,7 +19,7 @@ const HARD = [
 ]
 
 export const RACE_WORDS: Tiers = {
-  easy: WORDS_EN.filter((w) => w.length >= 2 && w.length <= 4 && /^[a-z]+$/.test(w)),
-  medium: WORDS_EN.filter((w) => w.length >= 5 && w.length <= 7 && /^[a-z]+$/.test(w)),
-  hard: [...new Set([...HARD, ...WORDS_EN.filter((w) => w.length >= 8 && /^[a-z]+$/.test(w))])],
+  easy: ALL.filter((w) => w.length >= 2 && w.length <= 4 && /^[a-z]+$/.test(w)),
+  medium: ALL.filter((w) => w.length >= 5 && w.length <= 7 && /^[a-z]+$/.test(w)),
+  hard: [...new Set([...HARD, ...ALL.filter((w) => w.length >= 8 && /^[a-z]+$/.test(w))])],
 }
