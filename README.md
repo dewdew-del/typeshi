@@ -5,6 +5,8 @@ Learn on a 200-lesson Journey, practice casually in English or Filipino, and com
 
 **Live site:** https://typeshi.vercel.app (free, no account needed)
 
+**Desktop app (Windows):** [Download Typeshi 0.1.3](https://github.com/dewdew-del/typeshi/releases/latest)
+
 ![Landing page](docs/screenshots/landing.png)
 
 ## Screenshots
