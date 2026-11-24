@@ -11,3 +11,6 @@ src-tauri/target
 # Local-only: promo videos (host on YouTube) and TypeScript build cache
 promo/
 *.tsbuildinfo
+
+# Supabase CLI cache
+supabase/.temp/
