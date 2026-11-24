@@ -13,7 +13,11 @@ Learn on a 200-lesson Journey, practice casually in English or Filipino, and com
 
 | Pick a mode | Journey |
 |---|---|
-| ![Mode picker: Journey, Play with friends, Casual typing](docs/screenshots/play.png) | ![Journey: 200 lessons with a path and locked lessons ahead](docs/screenshots/journey.png) |
+| ![Mode picker: Journey, Play with friends, Casual typing, Practice a letter](docs/screenshots/play.png) | ![Journey: 200 lessons with a path and locked lessons ahead](docs/screenshots/journey.png) |
+
+| Practice a letter | Your progress |
+|---|---|
+| ![Letter picker: A to H open, the rest locked until you reach 95% on the letter before](docs/screenshots/letters.png) | ![Progress page: lessons passed, best speed, accuracy and a speed chart with dates](docs/screenshots/progress.png) |
 
 ![Casual typing with live WPM, accuracy and a timer](docs/screenshots/typing.png)
 
@@ -22,7 +26,9 @@ Learn on a 200-lesson Journey, practice casually in English or Filipino, and com
 - **Journey:** 200 lessons in 13 stages, from posture and the home row to numbers, symbols, words and sentences. A lesson unlocks when you pass the one before it (90% to pass, with stars). An optional **Test skill** level test skips the stages you already know.
 - **Finger-guided keyboard:** an on-screen keyboard shows which finger to use for each key.
 - **Casual typing:** English or Filipino, 10 s, 30 s, 1 min, 2 min or endless, with live WPM and accuracy. Casual runs have a leaderboard per length.
-- **Weak-key practice:** drills built from the keys you miss most.
+- **Practice a letter:** pick a letter and type real words full of it. A to D are open first; 95% accuracy on a letter unlocks the next, and adaptive practice opens once all 26 are unlocked.
+- **Weak-key practice:** real words built around the keys you miss most often or type slowest.
+- **Progress page:** lessons passed, stars, best speed, accuracy per letter, a speed chart with dates and your personal-best history.
 - **Play with friends:** private or public rooms for 2 to 8 players, with a live race over Supabase Realtime.
 - **Accounts or guests:** email or Google login. Guests can play without signing up, and their progress lives in the tab.
 - **Badges, streaks and public profiles.**
