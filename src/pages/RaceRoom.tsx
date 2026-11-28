@@ -500,9 +500,6 @@ function Results(props: {
             </div>
           ))}
       </section>
-      <p className="text-sm text-muted">
-        Ranked by score: speed (WPM) times accuracy. Finish with at least {MIN_RACE_ACCURACY}% accuracy to be counted; typing fast but wrong does not win.
-      </p>
       <div className="flex flex-wrap items-center gap-3 pt-1">
         <button type="button" onClick={props.onNext} className="rounded-xl bg-accent px-8 py-3.5 text-[17px] font-bold text-accent-contrast hover:opacity-90">
           Next race
