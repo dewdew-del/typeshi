@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { NeedsPlayer, PlayingAs } from '../components/race/NeedsPlayer'
 import { createRoom, joinRoom, listPublicRooms, quickRace } from '../lib/api'
@@ -33,9 +33,9 @@ export function Friends() {
   const online = useOnline()
   if (!online) return <main className="px-6 pb-16 pt-6"><NeedsInternet what="Playing with friends" /></main>
   return (
-    <main className="mx-auto max-w-[880px] px-6 pb-16 pt-6">
+    <main className="mx-auto max-w-[1100px] px-6 pb-16 pt-6">
       <h1 className="mb-8 text-center text-3xl font-bold tracking-tight sm:text-4xl">Play with friends</h1>
-      <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
+      <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
         <PictureButton
           to="/friends/create"
           title="Create a room"
@@ -94,10 +94,37 @@ export function Friends() {
   )
 }
 
-/** Quick race: same choices as creating a room, but you are matched with other players right away. */
-export const QuickRace = () => <CreateRoom quick />
+/** Quick race: no choices, a short easy text (about 30 seconds of typing), matched with players right away. */
+export function QuickRace() {
+  const online = useOnline()
+  const navigate = useNavigate()
+  const signedIn = useAuth((s) => s.user !== null)
+  const [error, setError] = useState<string | null>(null)
+  const started = useRef(false)
 
-export function CreateRoom({ quick = false }: { quick?: boolean }) {
+  useEffect(() => {
+    if (!online || !signedIn || started.current) return
+    started.current = true // React runs effects twice in development; only one race
+    void (async () => {
+      const type = Math.random() < 0.6 ? 'Sentences' : 'Quotes'
+      const { id, error: err } = await quickRace(roomLabel(type, 'Easy'), await raceText(type, 'Easy'))
+      if (id) navigate(`/race/${id}`, { replace: true })
+      else setError(err)
+    })()
+  }, [online, signedIn, navigate])
+
+  if (!online) return <main className="px-6 pb-16 pt-2"><NeedsInternet what="Racing" /></main>
+  return (
+    <main className="mx-auto flex max-w-[680px] flex-col gap-7 px-6 pb-16 pt-2">
+      <BackHeader title="Quick race" />
+      <NeedsPlayer>
+        {error ? <p role="alert" className="text-center font-semibold text-bad">{error}</p> : <p className="text-center text-lg font-semibold text-muted">Finding a race…</p>}
+      </NeedsPlayer>
+    </main>
+  )
+}
+
+export function CreateRoom() {
   const online = useOnline()
   const navigate = useNavigate()
   const [visibility, setVisibility] = useState<'private' | 'public'>('private')
@@ -109,15 +136,13 @@ export function CreateRoom({ quick = false }: { quick?: boolean }) {
   const create = async () => {
     setBusy(true)
     setError(null)
-    const label = roomLabel(type, difficulty)
-    const text = await raceText(type, difficulty)
-    const { id, error: err } = quick ? await quickRace(label, text) : await createRoom(visibility, label, text)
+    const { id, error: err } = await createRoom(visibility, roomLabel(type, difficulty), await raceText(type, difficulty))
     setBusy(false)
     if (id) navigate(`/race/${id}`)
     else setError(err)
   }
 
-  if (!online) return <main className="px-6 pb-16 pt-2"><NeedsInternet what={quick ? 'Racing' : 'Creating a room'} /></main>
+  if (!online) return <main className="px-6 pb-16 pt-2"><NeedsInternet what="Creating a room" /></main>
 
   const card = (v: 'private' | 'public', label: string, note: string, icon: ReactNode) => {
     const on = visibility === v
@@ -137,9 +162,9 @@ export function CreateRoom({ quick = false }: { quick?: boolean }) {
 
   return (
     <main className="mx-auto flex max-w-[680px] flex-col gap-7 px-6 pb-16 pt-2">
-      <BackHeader title={quick ? 'Quick race' : 'Create a room'} />
+      <BackHeader title="Create a room" />
       <NeedsPlayer>
-        <section className={quick ? 'hidden' : 'flex flex-col gap-3'}>
+        <section className="flex flex-col gap-3">
           <div className="grid grid-cols-2 gap-3">
             {card('private', 'Private', 'Only people with your code can join.', <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>)}
             {card('public', 'Public', 'Anyone can find it in the list and join.', <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" /></svg>)}
@@ -164,7 +189,7 @@ export function CreateRoom({ quick = false }: { quick?: boolean }) {
         </section>
         <section className="flex flex-col gap-3.5 pt-1">
           <button type="button" onClick={create} disabled={busy} className="rounded-2xl bg-accent py-4 text-lg font-bold text-accent-contrast hover:opacity-90 disabled:opacity-60">
-            {busy ? (quick ? 'Finding a race…' : 'Creating…') : quick ? 'Find a race' : 'Create room'}
+            {busy ? 'Creating…' : 'Create room'}
           </button>
           {error && <p role="alert" className="text-center text-sm font-semibold text-bad">{error}</p>}
           <PlayingAs />
