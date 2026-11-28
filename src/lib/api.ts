@@ -1,5 +1,6 @@
 import type { Keystroke } from '../../supabase/functions/_shared/scoring'
 import { REASON_TEXT } from '../../supabase/functions/_shared/validation'
+import type { BotLane } from './botLanes'
 import { supabase } from './supabase'
 
 export interface IssuedTest {
@@ -195,6 +196,22 @@ export async function resetRoom(id: string, text: string) {
   if (!supabase) return 'Not set up yet.'
   const { error } = await supabase.rpc('reset_room', { p_room: id, p_text: text })
   return rpcError(error)
+}
+
+/** A race against computer players: returns the new room's id. */
+export async function quickRace(textType: string, text: string) {
+  if (!supabase) return { id: null, error: 'Not set up yet.' }
+  const { data, error } = await supabase.rpc('quick_race', { p_text_type: textType, p_text: text })
+  return { id: (data as string | null) ?? null, error: rpcError(error) }
+}
+
+/** Asks for computer players to join a public room whose host has been waiting alone. */
+export const fillRoom = (id: string) => supabase?.rpc('fill_room', { p_room: id })
+
+export async function roomSync(id: string): Promise<BotLane[]> {
+  if (!supabase) return []
+  const { data } = await supabase.rpc('room_sync', { p_room: id })
+  return (data ?? []) as BotLane[]
 }
 
 export async function listPublicRooms(): Promise<{ id: string; code: string; host: string; text_type: string; players: number }[]> {

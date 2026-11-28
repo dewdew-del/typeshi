@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { NeedsPlayer, PlayingAs } from '../components/race/NeedsPlayer'
-import { createRoom, joinRoom, listPublicRooms } from '../lib/api'
+import { createRoom, joinRoom, listPublicRooms, quickRace } from '../lib/api'
 import { Choice } from '../components/ui/Choice'
 import { NeedsInternet } from '../components/ui/NeedsInternet'
 import { useOnline } from '../lib/online'
@@ -56,6 +56,21 @@ export function Friends() {
           }
         />
         <PictureButton
+          to="/friends/quick"
+          title="Quick race"
+          art={
+            <svg viewBox="0 0 320 210" role="img" aria-label="Racers on lanes heading to a finish line" className="block h-auto w-full bg-art-bg">
+              {[60, 105, 150].map((y, i) => (
+                <g key={y}>
+                  <rect className="art-t4" x="40" y={y - 6} width="240" height="12" rx="6" />
+                  <circle className={['art-t1', 'art-t2', 'art-t3'][i]} cx={[200, 150, 110][i]} cy={y} r="14" stroke="var(--surface)" strokeWidth="4" />
+                </g>
+              ))}
+              <path d="M262 40v130" stroke="var(--accent)" strokeWidth="4" strokeDasharray="8 6" strokeLinecap="round" />
+            </svg>
+          }
+        />
+        <PictureButton
           to="/friends/join"
           title="Join a room"
           art={
@@ -79,7 +94,10 @@ export function Friends() {
   )
 }
 
-export function CreateRoom() {
+/** Quick race: same choices as creating a room, but you are matched with other players right away. */
+export const QuickRace = () => <CreateRoom quick />
+
+export function CreateRoom({ quick = false }: { quick?: boolean }) {
   const online = useOnline()
   const navigate = useNavigate()
   const [visibility, setVisibility] = useState<'private' | 'public'>('private')
@@ -91,13 +109,15 @@ export function CreateRoom() {
   const create = async () => {
     setBusy(true)
     setError(null)
-    const { id, error: err } = await createRoom(visibility, roomLabel(type, difficulty), await raceText(type, difficulty))
+    const label = roomLabel(type, difficulty)
+    const text = await raceText(type, difficulty)
+    const { id, error: err } = quick ? await quickRace(label, text) : await createRoom(visibility, label, text)
     setBusy(false)
     if (id) navigate(`/race/${id}`)
     else setError(err)
   }
 
-  if (!online) return <main className="px-6 pb-16 pt-2"><NeedsInternet what="Creating a room" /></main>
+  if (!online) return <main className="px-6 pb-16 pt-2"><NeedsInternet what={quick ? 'Racing' : 'Creating a room'} /></main>
 
   const card = (v: 'private' | 'public', label: string, note: string, icon: ReactNode) => {
     const on = visibility === v
@@ -117,9 +137,9 @@ export function CreateRoom() {
 
   return (
     <main className="mx-auto flex max-w-[680px] flex-col gap-7 px-6 pb-16 pt-2">
-      <BackHeader title="Create a room" />
+      <BackHeader title={quick ? 'Quick race' : 'Create a room'} />
       <NeedsPlayer>
-        <section className="flex flex-col gap-3">
+        <section className={quick ? 'hidden' : 'flex flex-col gap-3'}>
           <div className="grid grid-cols-2 gap-3">
             {card('private', 'Private', 'Only people with your code can join.', <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>)}
             {card('public', 'Public', 'Anyone can find it in the list and join.', <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" /></svg>)}
@@ -144,7 +164,7 @@ export function CreateRoom() {
         </section>
         <section className="flex flex-col gap-3.5 pt-1">
           <button type="button" onClick={create} disabled={busy} className="rounded-2xl bg-accent py-4 text-lg font-bold text-accent-contrast hover:opacity-90 disabled:opacity-60">
-            {busy ? 'Creating…' : 'Create room'}
+            {busy ? (quick ? 'Finding a race…' : 'Creating…') : quick ? 'Find a race' : 'Create room'}
           </button>
           {error && <p role="alert" className="text-center text-sm font-semibold text-bad">{error}</p>}
           <PlayingAs />

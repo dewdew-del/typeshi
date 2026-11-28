@@ -75,7 +75,8 @@ Deno.serve(async (req) => {
   // The race is over once everyone has a result, or the time cap has clearly passed.
   const [{ count: players }, { count: results }] = await Promise.all([
     admin.from('room_players').select('user_id', { count: 'exact', head: true }).eq('room_id', room.id),
-    admin.from('race_results').select('user_id', { count: 'exact', head: true }).eq('room_id', room.id),
+    // Only results whose time has come: computer players' results are saved early and appear when they finish.
+    admin.from('race_results').select('user_id', { count: 'exact', head: true }).eq('room_id', room.id).lte('created_at', new Date().toISOString()),
   ])
   if ((results ?? 0) >= (players ?? 0) || now > startsAt + room.cap_s * 1000 + 15_000) {
     await admin.from('rooms').update({ status: 'done' }).eq('id', room.id).eq('status', 'racing')

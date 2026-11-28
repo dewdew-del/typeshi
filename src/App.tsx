@@ -42,6 +42,7 @@ const router = createBrowserRouter([
       { path: 'journey/:lessonId', lazy: async () => ({ Component: (await import('./pages/LessonPage')).LessonPage }) },
       { path: 'friends', lazy: async () => ({ Component: (await import('./pages/Friends')).Friends }) },
       { path: 'friends/create', lazy: async () => ({ Component: (await import('./pages/Friends')).CreateRoom }) },
+      { path: 'friends/quick', lazy: async () => ({ Component: (await import('./pages/Friends')).QuickRace }) },
       { path: 'friends/join', lazy: async () => ({ Component: (await import('./pages/Friends')).JoinRoom }) },
       { path: 'race/:roomId', lazy: async () => ({ Component: (await import('./pages/RaceRoom')).RaceRoom }) },
       { path: 'casual', lazy: async () => ({ Component: (await import('./pages/Casual')).CasualSetup }) },

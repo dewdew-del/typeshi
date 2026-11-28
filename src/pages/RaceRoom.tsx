@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Avatar } from '../components/layout/Avatar'
 import { NeedsPlayer } from '../components/race/NeedsPlayer'
 import { TypingArea, type TypingResult } from '../components/typing/TypingArea'
-import { joinRoom, leaveRoom, loadRoom, resetRoom, startRace, submitRace, touchStreak, type RaceRow, type Room, type RoomPlayer } from '../lib/api'
+import { fillRoom, joinRoom, leaveRoom, loadRoom, resetRoom, roomSync, startRace, submitRace, touchStreak, type RaceRow, type Room, type RoomPlayer } from '../lib/api'
+import { botPosition, type BotLane } from '../lib/botLanes'
 import { parseRoomLabel, raceText } from '../lib/raceText'
 import { formatTime } from '../engine/stats'
 import { MIN_RACE_ACCURACY, raceScore } from '../../supabase/functions/_shared/scoring'
@@ -44,18 +45,32 @@ function Room({ roomId }: { roomId: string }) {
     else setData((prev) => (prev && sameRoomData(prev, d) ? prev : d))
   }, [roomId])
 
-  const { online, progress, send, clearProgress } = useRaceChannel(roomId, me, () => void refresh())
+  const channel = useRaceChannel(roomId, me, () => void refresh())
+  const { send, clearProgress } = channel
+  const bots = useBots(roomId, data, refresh)
+  const online = useMemo(() => new Set([...channel.online, ...bots.ids]), [channel.online, bots.ids])
+  const progress = useMemo(() => ({ ...channel.progress, ...bots.progress }), [channel.progress, bots.progress])
 
   useEffect(() => {
     void refresh()
   }, [refresh])
 
   // Fallback polling in case a Realtime message is missed (Realtime "refresh" messages do the quick updates).
+  // Faster while players are still arriving: before the start, and in a public room that is waiting.
   const status = data?.room?.status
+  const arriving = (status === 'racing' && !!data?.room?.starts_at && Date.parse(data.room.starts_at) > Date.now()) || (status === 'lobby' && data?.room?.visibility === 'public')
   useEffect(() => {
-    const id = window.setInterval(() => void refresh(), status === 'racing' ? 5000 : 8000)
+    const id = window.setInterval(() => void refresh(), arriving ? 1500 : status === 'racing' ? 5000 : 8000)
     return () => window.clearInterval(id)
-  }, [refresh, status])
+  }, [refresh, status, arriving])
+
+  // A host alone in a public room gets company after a while.
+  const aloneInPublic = status === 'lobby' && data?.room?.visibility === 'public' && data.room.host_id === me?.id && data.players.length === 1
+  useEffect(() => {
+    if (!aloneInPublic) return
+    const id = window.setTimeout(() => void fillRoom(roomId)?.then(() => void refresh()), 12000 + Math.random() * 8000)
+    return () => window.clearTimeout(id)
+  }, [aloneInPublic, roomId, refresh])
 
   if (missing) {
     return (
@@ -170,6 +185,47 @@ function Room({ roomId }: { roomId: string }) {
       onLeave={leave}
     />
   )
+}
+
+/**
+ * Players the server added to fill the room: where their bars are, and a reload when one of them finishes
+ * so their result shows up on time.
+ */
+function useBots(roomId: string, data: Loaded | null, refresh: () => Promise<void>) {
+  const [lanes, setLanes] = useState<BotLane[]>([])
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    let live = true
+    if (data?.room) void roomSync(roomId).then((l) => live && setLanes(l))
+    return () => {
+      live = false
+    }
+  }, [roomId, data])
+
+  const room = data?.room
+  const startsAt = room?.status === 'racing' && room.starts_at ? Date.parse(room.starts_at) : null
+  const offset = data?.clockOffset ?? 0
+  const racing = startsAt !== null && lanes.some((l) => l.end_ms != null)
+  useEffect(() => {
+    if (!racing || startsAt === null) return
+    const tick = window.setInterval(() => setNow(Date.now()), 250)
+    const reloads = lanes
+      .filter((l) => l.end_ms != null)
+      .map((l) => window.setTimeout(() => void refresh(), Math.max(0, startsAt + l.end_ms! - (Date.now() + offset) + 400)))
+    return () => {
+      window.clearInterval(tick)
+      reloads.forEach((id) => window.clearTimeout(id))
+    }
+  }, [racing, startsAt, lanes, offset, refresh])
+
+  const ids = useMemo(() => new Set(lanes.map((l) => l.user_id)), [lanes])
+  const progress = useMemo(() => {
+    const out: Record<string, { pos: number; wpm: number }> = {}
+    if (startsAt === null || !room) return out
+    for (const l of lanes) out[l.user_id] = botPosition(l, now + offset - startsAt, room.text.length)
+    return out
+  }, [lanes, now, offset, startsAt, room])
+  return { ids, progress }
 }
 
 function Lobby(props: {
@@ -317,7 +373,7 @@ function Race(props: {
   // Joining a race that is already running stays silent.
   const wasWaiting = useRef(!started)
   useEffect(() => {
-    if (countdown > 0 && useSettings.getState().sound) playCue('tick')
+    if (countdown > 0 && countdown <= 5 && useSettings.getState().sound) playCue('tick')
   }, [countdown])
   useEffect(() => {
     if (!started || !wasWaiting.current) return
@@ -357,7 +413,7 @@ function Race(props: {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl font-bold tracking-tight">Race</h1>
         <div className="flex gap-2.5">
-          <span className="rounded-full border border-border bg-surface px-4 py-2 text-sm font-bold tabular-nums">{started ? formatTime(elapsed) : 'Get ready'}</span>
+          <span className="rounded-full border border-border bg-surface px-4 py-2 text-sm font-bold tabular-nums">{started ? formatTime(elapsed) : countdown > 5 ? 'Waiting for players' : 'Get ready'}</span>
           <button type="button" onClick={props.onLeave} className="rounded-full border border-border bg-surface px-4 py-2 text-sm font-bold hover:bg-surface-2">Leave</button>
         </div>
       </div>
@@ -366,7 +422,7 @@ function Race(props: {
         <TypingArea target={room.text} locked={!started} finishSignal={finishSignal} onProgress={handleProgress} onFinish={onFinish} />
         {!started && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center" aria-live="assertive">
-            <span className="rounded-3xl bg-accent px-10 py-6 text-6xl font-extrabold text-accent-contrast shadow-xl tabular-nums">{countdown > 0 ? countdown : 'Go!'}</span>
+            <span className="rounded-3xl bg-accent px-10 py-6 text-6xl font-extrabold text-accent-contrast shadow-xl tabular-nums">{countdown > 5 ? <span className="text-3xl">Finding players…</span> : countdown > 0 ? countdown : 'Go!'}</span>
           </div>
         )}
       </div>
