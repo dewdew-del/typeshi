@@ -183,6 +183,11 @@ function Room({ roomId }: { roomId: string }) {
         }
       }}
       onLeave={leave}
+      onNext={async () => {
+        await leaveRoom(room.id)
+        send('refresh')
+        navigate('/friends/quick')
+      }}
     />
   )
 }
@@ -442,6 +447,7 @@ function Results(props: {
   error: string | null
   onAgain: () => void
   onLeave: () => void
+  onNext: () => void
 }) {
   const { room, players, results, isHost } = props
   const byId = new Map(players.map((p) => [p.user_id, p]))
@@ -498,8 +504,11 @@ function Results(props: {
         Ranked by score: speed (WPM) times accuracy. Finish with at least {MIN_RACE_ACCURACY}% accuracy to be counted; typing fast but wrong does not win.
       </p>
       <div className="flex flex-wrap items-center gap-3 pt-1">
+        <button type="button" onClick={props.onNext} className="rounded-xl bg-accent px-8 py-3.5 text-[17px] font-bold text-accent-contrast hover:opacity-90">
+          Next race
+        </button>
         {isHost ? (
-          <button type="button" onClick={props.onAgain} disabled={!over} className="rounded-xl bg-accent px-8 py-3.5 text-[17px] font-bold text-accent-contrast hover:opacity-90 disabled:opacity-60">
+          <button type="button" onClick={props.onAgain} disabled={!over} className="rounded-xl border border-border bg-surface px-7 py-3.5 text-[17px] font-bold hover:bg-surface-2 disabled:opacity-60">
             Race again
           </button>
         ) : (
