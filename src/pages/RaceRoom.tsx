@@ -432,7 +432,6 @@ function Race(props: {
         )}
       </div>
       {submitError && <p role="alert" className="text-center font-semibold text-bad">{submitError}</p>}
-      <p className="text-center text-sm text-muted">Pasting is disabled, and your result is checked by the server. Max {formatTime(capMs)}.</p>
     </>
   )
 }
